@@ -3,12 +3,13 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
+
 using namespace std;
 
 int main()
 {
-    sf::RenderWindow window;
-    window.setSize(sf::Vector2u(500,500));
+
+    sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width/2,sf::VideoMode::getDesktopMode().height/2),"Pong",sf::Style::Close|sf::Style::Resize);
     window.setVerticalSyncEnabled(true);
     Snake snake(window);
     while(window.isOpen()){
@@ -23,7 +24,7 @@ int main()
 
         }
 
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
         window.draw(snake);
         window.display();
 
