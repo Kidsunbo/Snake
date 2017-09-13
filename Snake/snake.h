@@ -6,6 +6,8 @@
 #include <deque>
 #include <memory>
 #include <random>
+#include <thread>
+#include <mutex>
 
 class Snake:public sf::Drawable{
 
@@ -15,6 +17,11 @@ private:
     int grid_y = 0;
     int food_x = 0,food_y = 0;
     sf::RectangleShape food;
+    int tail = 5;
+    bool can_run = false;
+    int x=0,y=0;
+    std::mutex m;
+    int speed = 0;
 
     std::deque<std::shared_ptr<sf::RectangleShape>> deq;
 
@@ -28,15 +35,18 @@ private:
 
 public:
     Snake(sf::Window& window){
+
+        for(int i = 0;i!=5;i++){
         std::shared_ptr<sf::RectangleShape> temp = std::make_shared<sf::RectangleShape>();
         temp->setSize(sf::Vector2f(29,29));
         temp->setFillColor(sf::Color::Yellow);
-        temp->setPosition(window.getSize().x/2-5,window.getSize().y/2-5);
-        deq.push_back(temp);
+        temp->setPosition(5*30,5*30);
+        deq.push_front(temp);
+        }
 
         //grid
-        grid_x=window.getSize().x/30;
-        grid_y=window.getSize().y/30;
+        grid_x=window.getSize().x/30-1;
+        grid_y=window.getSize().y/30-1;
 
         //food
         std::random_device rd;
@@ -44,7 +54,66 @@ public:
         std::uniform_int_distribution<int> distribution_y(0,grid_y);
         food_x = distribution_x(rd);
         food_y = distribution_y(rd);
+        food.setFillColor(sf::Color::Red);
+        food.setSize(sf::Vector2f(29,29));
+        food.setPosition(food_x*30,food_y*30);
+
+
     }
+
+    void update_with_thread(){
+        while(true){
+        if(x!=0 || y!=0){
+
+            std::shared_ptr<sf::RectangleShape> temp = std::make_shared<sf::RectangleShape>();
+            auto x_s = (int)(this->deq.front()->getPosition().x+x*30);
+            auto y_s = (int)(this->deq.front()->getPosition().y+y*30);
+            if(x_s<0) x_s +=(grid_x*30+30);
+            if(y_s<0) y_s +=(grid_y*30+30);
+            temp->setPosition(x_s%(grid_x*30+30),y_s%(grid_y*30+30));
+            temp->setSize(sf::Vector2f(29,29));
+            temp->setFillColor(sf::Color::Yellow);
+            deq.push_front(temp);
+            if(this->meet_the_food()){
+                std::random_device rd;
+                std::uniform_int_distribution<int> distribution_x(0,grid_x);
+                std::uniform_int_distribution<int> distribution_y(0,grid_y);
+                food_x = distribution_x(rd);
+                food_y = distribution_y(rd);
+                food.setFillColor(sf::Color::Red);
+                food.setSize(sf::Vector2f(29,29));
+                food.setPosition(food_x*30,food_y*30);
+            }
+            else{
+                deq.pop_back();
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000-speed));
+    }
+        }
+    }
+
+    bool meet_the_food(){
+        return this->deq.front()->getPosition()==this->food.getPosition()? true:false;
+    }
+
+    void set_x_y(int x, int y){
+        std::lock_guard<std::mutex> lg(m);
+        this->x = x;
+        this->y = y;
+    }
+
+    void add_speed(){
+        std::lock_guard<std::mutex> lg(m);
+        if(speed <900)
+        this->speed+=100;
+    }
+    void sub_speed(){
+        std::lock_guard<std::mutex> lg(m);
+        if(speed >0)
+        this->speed-=100;
+    }
+
 };
 
 
