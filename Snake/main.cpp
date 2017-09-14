@@ -1,9 +1,9 @@
 #include <iostream>
 #include "snake.h"
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include <functional>
-#include <thread>
+
+
+
 
 
 using namespace std;
@@ -15,9 +15,7 @@ int main()
     window.setVerticalSyncEnabled(true);
     Snake snake(window);
 
-    std::thread t(std::bind(&Snake::update_with_thread,&snake));
-    t.detach();
-    while(window.isOpen()){
+	while(window.isOpen()){
 
 
         sf::Event event;
@@ -52,11 +50,11 @@ int main()
 
         window.clear(sf::Color::Black);
         window.draw(snake);
+		snake.update_with_thread();
         window.display();
 
 
 
     }
-
     return 0;
 }

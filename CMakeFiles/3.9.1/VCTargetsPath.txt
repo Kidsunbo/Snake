@@ -1,0 +1,1 @@
+D:/HelloWorld/CPP/VisualStudio/Common7/IDE/VC/VCTargets

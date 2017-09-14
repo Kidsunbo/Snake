@@ -1,0 +1,5 @@
+﻿  main.cpp
+c:\users\administrator\desktop\snake\snake\snake.h(63): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\snake\snake\snake.h(77): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+c:\users\administrator\desktop\snake\snake\snake.h(89): warning C4244: “参数”: 从“int”转换到“float”，可能丢失数据
+  Snake.vcxproj -> C:\Users\Administrator\Desktop\Snake\Release\Snake.exe
